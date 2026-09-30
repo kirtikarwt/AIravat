@@ -296,7 +296,7 @@ def get_video_url(fname: str) -> str:
 def render_hero(video: str, logo: str) -> None:
     v_url = get_video_url("hero_monsoon_earth.mp4")
     if v_url:
-        vid = f"""<video class="hero-video" autoplay muted loop playsinline preload="auto">
+        vid = f"""<video class="hero-video" autoplay muted loop playsinline preload="auto" poster="app/static/anomaly_mesh.png">
           <source src="{v_url}" type="video/mp4">
           <source src="/app/static/hero_monsoon_earth.mp4" type="video/mp4">
           <source src="app/static/hero_monsoon_earth.mp4" type="video/mp4">
