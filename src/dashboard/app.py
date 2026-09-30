@@ -272,13 +272,35 @@ def style_fig(fig, height=460):
     return fig
 
 
+def get_video_url(fname: str) -> str:
+    path = None
+    for candidate in [
+        ASSETS / fname,
+        Path(__file__).resolve().parent / "static" / fname,
+        Path(__file__).resolve().parent.parent.parent / "static" / fname,
+    ]:
+        if candidate.exists():
+            path = candidate
+            break
+    if not path or not path.exists():
+        return ""
+    try:
+        from streamlit import runtime
+        if runtime.exists():
+            return runtime.get_instance().media_file_mgr.add(str(path), "video/mp4", f"coord_{fname}")
+    except Exception:
+        pass
+    return f"/app/static/{fname}"
+
+
 def render_hero(video: str, logo: str) -> None:
-    hero_video_file = ASSETS / "hero_monsoon_earth.mp4"
-    if hero_video_file.exists():
-        vid = '<video class="hero-video" autoplay muted loop playsinline preload="auto"><source src="app/static/hero_monsoon_earth.mp4" type="video/mp4"></video>'
-        slot = ""
-    elif video and not video.endswith(".mp4"):
-        vid = f'<video class="hero-video" autoplay muted loop playsinline><source src="data:video/mp4;base64,{video}" type="video/mp4"></video>'
+    v_url = get_video_url("hero_monsoon_earth.mp4")
+    if v_url:
+        vid = f"""<video class="hero-video" autoplay muted loop playsinline preload="auto">
+          <source src="{v_url}" type="video/mp4">
+          <source src="/app/static/hero_monsoon_earth.mp4" type="video/mp4">
+          <source src="app/static/hero_monsoon_earth.mp4" type="video/mp4">
+        </video>"""
         slot = ""
     else:
         vid = ""
@@ -315,7 +337,12 @@ def render_media(fname: str, title: str, subtitle: str, align: str = "right", da
     is_video = fname.endswith(".mp4")
     classes = "video-section" + (" align-left" if align == "left" else "") + (" dark-text" if dark_text and p.exists() else "") + (" page-header" if header else "")
     if is_video and p.exists():
-        media = f'<video autoplay muted loop playsinline preload="auto"><source src="app/static/{fname}" type="video/mp4"></video>'
+        v_url = get_video_url(fname)
+        media = f"""<video autoplay muted loop playsinline preload="auto">
+          <source src="{v_url}" type="video/mp4">
+          <source src="/app/static/{fname}" type="video/mp4">
+          <source src="app/static/{fname}" type="video/mp4">
+        </video>"""
     elif p.exists():
         data = asset(fname)
         mime = "image/png" if fname.endswith(".png") else "image/jpeg"
