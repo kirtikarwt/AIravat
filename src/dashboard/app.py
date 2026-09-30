@@ -14,6 +14,11 @@ import json
 import math
 from datetime import datetime, timedelta
 from pathlib import Path
+import sys
+
+_DASH_DIR = Path(__file__).resolve().parent
+if str(_DASH_DIR) not in sys.path:
+    sys.path.insert(0, str(_DASH_DIR))
 
 import numpy as np
 import pandas as pd
